@@ -1,19 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { signInStart,signInSuccess,signInFailure } from "../redux/user/userSlice";
+import {useDispatch, useSelector} from 'react-redux'
 
 function SignIn() {
   const [formatData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const {loading,error}=useSelector((state)=>state.user)
+  // const {loading,error}=useSelector((state)=>state.user)
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formatData, [e.target.id]: e.target.value });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      setError(false);
+       dispatch(signInStart());
 
       const res = await fetch("http://localhost:3000/api/auth/signin", {
         method: "POST",
@@ -22,19 +24,18 @@ function SignIn() {
         },
         body: JSON.stringify(formatData),
       });
-      if (!res.ok) {
-        throw new Error("Network response was not ok");
-      }
+
       const data = await res.json();
       if (data.success === false) {
-        setError(true);
+        dispatch(signInFailure(data))
+
         return;
       }
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      setLoading(false);
-      setError(true);
-      console.error("Error during form submission:", error);
+      dispatch(signInFailure(error));
+      // console.error("Error during form submission:", error);
     }
   };
 
@@ -69,7 +70,7 @@ function SignIn() {
           <span className="text-blue-500">Sign up</span>
         </Link>
       </div>
-      <p className="text-red-700">{error && "Something went wrong!"}</p>
+      <p className="text-red-700">{error ? error.message || "Something went wrong!" : ""}</p>
     </div>
   );
 }
