@@ -50,7 +50,6 @@ export const google = async (req, res, next) => {
     if (user) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password: hashedPassword, ...rest } = user._doc;
-      console.log(rest);
       res
         .cookie("access_token", token, {
           httpOnly: true,
