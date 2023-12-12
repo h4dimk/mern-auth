@@ -1,12 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { signInStart,signInSuccess,signInFailure } from "../redux/user/userSlice";
-import {useDispatch, useSelector} from 'react-redux'
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth";
 
 function SignIn() {
   const [formatData, setFormData] = useState({});
-  const {loading,error}=useSelector((state)=>state.user)
+  const { loading, error } = useSelector((state) => state.user);
   // const {loading,error}=useSelector((state)=>state.user)
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -16,19 +20,20 @@ function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-       dispatch(signInStart());
+      dispatch(signInStart());
 
       const res = await fetch("http://localhost:3000/api/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(formatData),
       });
 
       const data = await res.json();
       if (data.success === false) {
-        dispatch(signInFailure(data))
+        dispatch(signInFailure(data));
 
         return;
       }
@@ -64,7 +69,7 @@ function SignIn() {
         >
           {loading ? "Loading..." : "Sign In"}
         </button>
-        <OAuth/>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Dont Have an account ?</p>
@@ -72,7 +77,9 @@ function SignIn() {
           <span className="text-blue-500">Sign up</span>
         </Link>
       </div>
-      <p className="text-red-700">{error ? error.message || "Something went wrong!" : ""}</p>
+      <p className="text-red-700">
+        {error ? error.message || "Something went wrong!" : ""}
+      </p>
     </div>
   );
 }

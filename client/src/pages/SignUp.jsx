@@ -21,6 +21,7 @@ function SignUp() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(formatData),
       });
       if (!res.ok) {
@@ -70,7 +71,7 @@ function SignUp() {
         >
           {loading ? "Loading..." : "Sign Up"}
         </button>
-        <OAuth/>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account ?</p>
