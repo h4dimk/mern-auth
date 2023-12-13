@@ -5,6 +5,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
+import AdminDash from "./pages/AdminDash";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route element={<PrivateRoute/>}>
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin-dash" element={<AdminDash />} />
         </Route>
       </Routes>
     </BrowserRouter>
