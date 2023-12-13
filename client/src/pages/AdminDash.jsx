@@ -1,35 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function AdminDash() {
   // Dummy data for testing
-  const [users, setUsers] = useState([
-    {
-      id: "1",
-      username: "user1",
-      email: "user1@example.com",
-      isAdmin: false,
-      isActive: true,
-    },
-    {
-      id: "2",
-      username: "user2",
-      email: "user2@example.com",
-      isAdmin: true,
-      isActive: false,
-    },
-    // Add more users as needed
-  ]);
+  const [users, setUsers] = useState([]);
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/admin/users`);
+      const data = await res.json();
+      setUsers(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const handleDelete = (id) => {
     // Handle delete logic here
-    setUsers(users.filter((user) => user.id !== id));
+    setUsers(users.filter((user) => user._id !== id));
   };
 
   const handleBlock = (id) => {
     // Handle block/unblock logic here
     setUsers(
       users.map((user) =>
-        user.id === id ? { ...user, isActive: !user.isActive } : user
+        user._id === id ? { ...user, isActive: !user.isActive } : user
+      )
+    );
+  };
+
+  const handleAdminToggle = (id) => {
+    // Handle admin toggle logic here
+    setUsers(
+      users.map((user) =>
+        user._id === id ? { ...user, isAdmin: !user.isAdmin } : user
       )
     );
   };
@@ -50,7 +57,7 @@ function AdminDash() {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id} className="align-top">
+              <tr key={user._id} className="align-top">
                 <td className="py-2 px-4 border-b text-center">
                   {user.username}
                 </td>
@@ -64,7 +71,7 @@ function AdminDash() {
                 <td className="py-2 px-4 border-b space-x-2 text-center">
                   <button
                     className="text-sm text-red-500 hover:text-red-700"
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() => handleDelete(user._id)}
                   >
                     Delete
                   </button>
@@ -74,9 +81,19 @@ function AdminDash() {
                     } hover:${
                       user.isActive ? "text-orange-700" : "text-green-700"
                     }`}
-                    onClick={() => handleBlock(user.id)}
+                    onClick={() => handleBlock(user._id)}
                   >
                     {user.isActive ? "Block" : "Unblock"}
+                  </button>
+                  <button
+                    className={`text-sm ${
+                      user.isAdmin ? "text-gray-500" : "text-blue-500"
+                    } hover:${
+                      user.isAdmin ? "text-gray-700" : "text-blue-700"
+                    }`}
+                    onClick={() => handleAdminToggle(user._id)}
+                  >
+                    {user.isAdmin ? "Revoke Admin" : "Make Admin"}
                   </button>
                 </td>
               </tr>
