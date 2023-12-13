@@ -18,14 +18,18 @@ function Header() {
             <>
               <Link to="/profile">
                 <li>
-                  <img src={currentUser.profilePicture} alt="profile" className="h-7 w-7 rounded-full object-cover" />
+                  <img
+                    src={currentUser.profilePicture}
+                    alt="profile"
+                    className="h-7 w-7 rounded-full object-cover"
+                  />
                 </li>
               </Link>
-              {/* {currentUser.isAdmin && ( */}
+              {currentUser.role === "admin" && (
                 <Link to="/admin-dash">
                   <li>Dashboard</li>
                 </Link>
-             {/* )}*/} 
+              )}
             </>
           ) : (
             <Link to="/sign-in">

@@ -18,13 +18,26 @@ function AdminDash() {
     fetchUsers();
   }, []);
 
-  const handleDelete = (id) => {
-    // Handle delete logic here
+  const handleDelete = async (id) => {
+    const res = await fetch(`http://localhost:3000/api/admin/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     setUsers(users.filter((user) => user._id !== id));
   };
 
-  const handleBlock = (id) => {
-    // Handle block/unblock logic here
+  const handleBlock = async (id) => {
+    const res = await fetch(`http://localhost:3000/api/admin/block/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    fetchUsers();
+
     setUsers(
       users.map((user) =>
         user._id === id ? { ...user, isActive: !user.isActive } : user
@@ -32,13 +45,31 @@ function AdminDash() {
     );
   };
 
-  const handleAdminToggle = (id) => {
-    // Handle admin toggle logic here
-    setUsers(
-      users.map((user) =>
-        user._id === id ? { ...user, isAdmin: !user.isAdmin } : user
-      )
-    );
+  const handleAdminToggle = async (id) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/admin/makeadmin/${id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      fetchUsers();
+
+      setUsers(
+        users.map((user) =>
+          user._id === id
+            ? { ...user, role: user.role === "admin" ? "user" : "admin" }
+            : user
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      // Handle error, show a notification, etc.
+    }
   };
 
   return (
@@ -50,7 +81,7 @@ function AdminDash() {
             <tr>
               <th className="py-2 px-4 border-b text-center">Username</th>
               <th className="py-2 px-4 border-b text-center">Email</th>
-              <th className="py-2 px-4 border-b text-center">isAdmin</th>
+              <th className="py-2 px-4 border-b text-center">Role</th>
               <th className="py-2 px-4 border-b text-center">isActive</th>
               <th className="py-2 px-4 border-b text-center">Actions</th>
             </tr>
@@ -63,7 +94,7 @@ function AdminDash() {
                 </td>
                 <td className="py-2 px-4 border-b text-center">{user.email}</td>
                 <td className="py-2 px-4 border-b text-center">
-                  {user.isAdmin ? "Yes" : "No"}
+                  {user.role === "admin" ? "Admin" : "User"}
                 </td>
                 <td className="py-2 px-4 border-b text-center">
                   {user.isActive ? "Yes" : "No"}
@@ -87,13 +118,13 @@ function AdminDash() {
                   </button>
                   <button
                     className={`text-sm ${
-                      user.isAdmin ? "text-gray-500" : "text-blue-500"
+                      user.role === "admin" ? "text-gray-500" : "text-blue-500"
                     } hover:${
-                      user.isAdmin ? "text-gray-700" : "text-blue-700"
+                      user.role === "admin" ? "text-gray-700" : "text-blue-700"
                     }`}
                     onClick={() => handleAdminToggle(user._id)}
                   >
-                    {user.isAdmin ? "Revoke Admin" : "Make Admin"}
+                    {user.role === "admin" ? "Revoke Admin" : "Make Admin"}
                   </button>
                 </td>
               </tr>
