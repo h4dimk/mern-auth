@@ -12,3 +12,13 @@ export const verifyToken = (req, res, next) => {
     next();
   });
 };
+
+export const verifyAdmin = (req, res, next) => {
+  const user = req.user;
+
+  if (!user || !user.role === "admin") {
+    return next(errorHandler(403, "You do not have admin privileges"));
+  }
+
+  next();
+};
