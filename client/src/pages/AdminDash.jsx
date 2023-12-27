@@ -6,9 +6,15 @@ function AdminDash() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/api/admin/users`);
+      const res = await fetch(`http://localhost:3000/api/admin/users`, {
+        credentials: "include",
+      });
       const data = await res.json();
-      setUsers(data);
+      if (res.ok) {
+        setUsers(data);
+      } else {
+        console.log(data);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -18,12 +24,15 @@ function AdminDash() {
     fetchUsers();
   }, []);
 
+  console.log(users);
+
   const handleDelete = async (id) => {
     const res = await fetch(`http://localhost:3000/api/admin/delete/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
     setUsers(users.filter((user) => user._id !== id));
   };
@@ -34,6 +43,7 @@ function AdminDash() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     fetchUsers();
@@ -54,6 +64,7 @@ function AdminDash() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
         }
       );
 

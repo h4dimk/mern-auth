@@ -14,10 +14,12 @@ export const verifyToken = (req, res, next) => {
 };
 
 export const verifyAdmin = (req, res, next) => {
-  const user = req.user;
+  const userRole = req.user?.role;
 
-  if (!user || !user.role === "admin") {
-    return next(errorHandler(403, "You do not have admin privileges"));
+  if (userRole !== "admin") {
+    return next(
+      errorHandler(403, "You do not have permission to access this resource")
+    );
   }
 
   next();
