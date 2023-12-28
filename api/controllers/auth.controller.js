@@ -32,7 +32,10 @@ export const signin = async (req, res, next) => {
     const validPassword = bcryptjs.compareSync(password, user.password);
     if (!validPassword) return next(errorHandler(401, "Wrong credentials"));
 
-    const token = jwt.sign({ id: user._id , role:user.role}, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET
+    );
     const { password: hashedPassword, ...rest } = user._doc;
     const expiry = new Date(Date.now() + 3600000);
     res
@@ -52,7 +55,10 @@ export const google = async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
 
     if (user) {
-      const token = jwt.sign({ id: user._id , role:user.role}, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: user._id, role: user.role },
+        process.env.JWT_SECRET
+      );
       const { password: hashedPassword, ...rest } = user._doc;
       res
         .cookie("access_token", token, {
@@ -73,7 +79,10 @@ export const google = async (req, res, next) => {
         profilePicture: req.body.photo,
       });
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id , role: newUser.role }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: newUser._id, role: newUser.role },
+        process.env.JWT_SECRET
+      );
       const { password: hashedPassword2, ...rest } = newUser._doc;
       res
         .cookie("access_token", token, {
